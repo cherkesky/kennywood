@@ -1,4 +1,4 @@
-"""Park Areas for Kennywood Amusement Park"""
+"""View module for handling requests about park areas"""
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -25,6 +25,23 @@ class ParkAreaSerializer(serializers.HyperlinkedModelSerializer):
 class ParkAreas(ViewSet):
     """Park Areas for Kennywood Amusement Park"""
 
+    # Handles POST
+    def create(self, request):
+        """Handle POST operations
+
+        Returns:
+            Response -- JSON serialized ParkArea instance
+        """
+        newarea = ParkArea()
+        newarea.name = request.data["name"]
+        newarea.theme = request.data["theme"]
+        newarea.save()
+
+        serializer = ParkAreaSerializer(newarea, context={'request': request})
+
+        return Response(serializer.data)
+
+    # handles GET one ( the /<some_number tells it that)
     def retrieve(self, request, pk=None):
         """Handle GET requests for single park area
 
@@ -37,7 +54,8 @@ class ParkAreas(ViewSet):
             return Response(serializer.data)
         except Exception as ex:
             return HttpResponseServerError(ex)
-            
+
+    # handles GET all
     def list(self, request):
         """Handle GET requests to park areas resource
 
@@ -51,20 +69,22 @@ class ParkAreas(ViewSet):
             context={'request': request}
         )
         return Response(serializer.data)
-    
+
+    # handles PUT
     def update(self, request, pk=None):
-        """Handle PUT requests for a park area
+      """Handle PUT requests for a park area
 
-        Returns:
-            Response -- Empty body with 204 status code
-        """
-        area = ParkArea.objects.get(pk=pk)
-        area.name = request.data["name"]
-        area.theme = request.data["theme"]
-        area.save()
+      Returns:
+          Response -- Empty body with 204 status code
+      """
+      area = ParkArea.objects.get(pk=pk)
+      area.name = request.data["name"]
+      area.theme = request.data["theme"]
+      area.save()
 
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+      return Response({}, status=status.HTTP_204_NO_CONTENT)
 
+    # handles DELETE
     def destroy(self, request, pk=None):
         """Handle DELETE requests for a single park area
 
@@ -82,17 +102,3 @@ class ParkAreas(ViewSet):
 
         except Exception as ex:
             return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def create(self, request):
-        """Handle POST operations
-
-        Returns:
-            Response -- JSON serialized ParkArea instance
-        """
-        newarea = ParkArea()
-        newarea.name = request.data["name"]
-        newarea.theme = request.data["theme"]
-        newarea.save()
-
-        serializer = ParkAreaSerializer(newarea, context={'request': request})
-
-        return Response(serializer.data)       
