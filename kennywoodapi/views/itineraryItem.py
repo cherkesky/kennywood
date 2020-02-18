@@ -48,3 +48,18 @@ class ItineraryItems(ViewSet):
         serializer = ItinerarySerializer(new_itinerary_item, context={'request': request})
 
         return Response(serializer.data)
+    # handles GET all
+    def list(self, request):
+        """Handle GET requests to park areas resource
+
+        Returns:
+            Response -- JSON serialized list of itineraryItems
+        """
+        itineraryItems = Itinerary.objects.all()
+        serializer = ItinerarySerializer(
+            itineraryItems,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+
