@@ -59,7 +59,7 @@ class Attractions(ViewSet):
         new_attraction_item = Attraction()
         new_attraction_item.name = request.data["name"]
         new_attraction_item.area_id = request.data["area"]
-        new_attraction_item.customer_id = request.auth.user.id
+        new_attraction_item.customer_id = request.auth.user.customer.id
 
         new_attraction_item.save()
 

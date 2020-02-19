@@ -89,6 +89,12 @@ class ItineraryItems(ViewSet):
       """
       itineraryItems = Itinerary.objects.get(pk=pk)
       itineraryItems.starttime = request.data["starttime"]
+      itineraryItems.save()
+
+      return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+
 # Handles POST
     def create(self, request):
         """Handle POST operations
@@ -98,8 +104,8 @@ class ItineraryItems(ViewSet):
         """
         newitinerary = Itinerary()
         newitinerary.starttime = request.data["starttime"]
-        newitinerary.attraction_id = request.data["attraction_id"] 
-        newitinerary.customer_id = request.data["customer_id"] # request.auth.user.id
+        newitinerary.attraction_id = request.data["ride_id"] 
+        newitinerary.customer_id = request.auth.user.customer.id ## added customer in between
         newitinerary.save()
 
         serializer = ItinerarySerializer(newitinerary, context={'request': request})
