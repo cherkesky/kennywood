@@ -54,3 +54,15 @@ class Attractions(ViewSet):
         serializer = AttractionSerializer(attractions, many=True, context={'request': request})
 
         return Response(serializer.data)
+
+def create(self, request):
+        new_attraction_item = Attraction()
+        new_Attraction_item.starttime = request.data["name"]
+        new_itinerary_item.customer_id = request.auth.user.id
+        new_itinerary_item.attraction_id = request.data["ride_id"]
+
+        new_itinerary_item.save()
+
+        serializer = ItinerarySerializer(new_itinerary_item, context={'request': request})
+
+        return Response(serializer.data)

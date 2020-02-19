@@ -48,7 +48,7 @@ class ItineraryItems(ViewSet):
         serializer = ItinerarySerializer(new_itinerary_item, context={'request': request})
 
         return Response(serializer.data)
-    # handles GET all
+# handles GET all
     def list(self, request):
         """Handle GET requests to park areas resource
 
@@ -62,4 +62,49 @@ class ItineraryItems(ViewSet):
             context={'request': request}
         )
         return Response(serializer.data)
+ # handles DELETE
+    def destroy(self, request, pk=None):
+        """Handle DELETE requests for a single park area
+
+        Returns:
+            Response -- 200, 404, or 500 status code
+        """
+        try:
+            itineraryItems = Itinerary.objects.get(pk=pk)
+            itineraryItems.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except itineraryItems.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# handles PUT
+    def update(self, request, pk=None):
+      """Handle PUT requests for a park area
+
+      Returns:
+          Response -- Empty body with 204 status code
+      """
+      itineraryItems = Itinerary.objects.get(pk=pk)
+      itineraryItems.starttime = request.data["starttime"]
+# Handles POST
+    def create(self, request):
+        """Handle POST operations
+
+        Returns:
+            Response -- JSON serialized ParkArea instance
+        """
+        newitinerary = Itinerary()
+        newitinerary.starttime = request.data["starttime"]
+        newitinerary.attraction_id = request.data["attraction_id"] 
+        newitinerary.customer_id = request.data["customer_id"] # request.auth.user.id
+        newitinerary.save()
+
+        serializer = ItinerarySerializer(newitinerary, context={'request': request})
+
+        return Response(serializer.data)
+
+
 
