@@ -55,14 +55,45 @@ class Attractions(ViewSet):
 
         return Response(serializer.data)
 
-def create(self, request):
+    def create(self, request):
         new_attraction_item = Attraction()
-        new_Attraction_item.starttime = request.data["name"]
-        new_itinerary_item.customer_id = request.auth.user.id
-        new_itinerary_item.attraction_id = request.data["ride_id"]
+        new_attraction_item.name = request.data["name"]
+        new_attraction_item.area_id = request.data["area"]
+        new_attraction_item.customer_id = request.auth.user.id
 
-        new_itinerary_item.save()
+        new_attraction_item.save()
 
-        serializer = ItinerarySerializer(new_itinerary_item, context={'request': request})
+        serializer = AttractionSerializer(new_attraction_item, context={'request': request})
 
         return Response(serializer.data)
+# handles DELETE
+    def destroy(self, request, pk=None):
+        """Handle DELETE requests for a single park area
+
+        Returns:
+            Response -- 200, 404, or 500 status code
+        """
+        try:
+            area = Attraction.objects.get(pk=pk)
+            area.delete()
+
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        except Attraction.DoesNotExist as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as ex:
+            return Response({'message': ex.args[0]}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+ # handles PUT
+    def update(self, request, pk=None):
+      """Handle PUT requests for a park area
+
+      Returns:
+          Response -- Empty body with 204 status code
+      """
+      attraction_item = Attraction.objects.get(pk=pk)
+      attraction_item.name = request.data["name"]
+      attraction_item.area_id = request.data["area"]
+      attraction_item.save()
+
+      return Response({}, status=status.HTTP_204_NO_CONTENT)
